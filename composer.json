@@ -1,6 +1,6 @@
 {
-	"name": "wielgosz-info/wi-collapsible-social-links",
-	"description": "WI Collapsible Social Links block",
+	"name": "wielgosz-info/wi-query-tax-filter",
+	"description": "Allows to use query vars to filter Query Block posts.",
 	"version": "0.1.0",
 	"type": "wordpress-plugin",
 	"license": "MIT",
