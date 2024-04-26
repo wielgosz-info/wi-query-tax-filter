@@ -6,15 +6,30 @@
 	"license": "MIT",
 	"main": "build/index.js",
 	"scripts": {
-		"build": "wp-scripts build --webpack-copy-php",
+		"build": "wp-scripts build --webpack-copy-php --experimental-modules",
 		"format": "wp-scripts format",
 		"lint:css": "wp-scripts lint-style",
 		"lint:js": "wp-scripts lint-js",
 		"packages-update": "wp-scripts packages-update",
 		"plugin-zip": "wp-scripts plugin-zip",
-		"start": "wp-scripts start --webpack-copy-php"
+		"start": "wp-scripts start --webpack-copy-php --experimental-modules"
 	},
 	"devDependencies": {
-		"@wordpress/scripts": "^27.7.0"
+		"@babel/core": "^7.24.3",
+		"@wordpress/base-styles": "^4.45.0",
+		"@wordpress/eslint-plugin": "^17.11.0",
+		"@wordpress/icons": "^9.46.0",
+		"@wordpress/prettier-config": "^3.11.0",
+		"@wordpress/scripts": "^27.7.0",
+		"@wordpress/stylelint-config": "^21.37.0",
+		"eslint": "^8.57.0",
+		"prettier": "^3.2.5",
+		"stylelint": "^14.5.1",
+		"stylelint-config-recommended-scss": "^8.0.0",
+		"webpack": "^5.91.0"
+	},
+	"packageManager": "yarn@4.1.1",
+	"dependencies": {
+		"@wordpress/interactivity": "^5.4.0"
 	}
 }

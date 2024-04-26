@@ -3,18 +3,25 @@
 	"apiVersion": 3,
 	"name": "wi-query-tax-filter/wi-query-tax-filter",
 	"version": "0.1.0",
-	"title": "Query Taxonomy Filter",
+	"title": "WI Query Taxonomy Filter",
 	"category": "widgets",
-	"icon": "smiley",
+	"icon": "filter",
 	"description": "Allows to use query vars to filter Query Block posts.",
 	"example": {},
+	"parent": [
+		"core/query"
+	],
+	"usesContext": [
+		"query"
+	],
 	"supports": {
-		"html": false
+		"html": false,
+		"interactivity": true
 	},
 	"textdomain": "wi-query-tax-filter",
 	"editorScript": "file:./index.js",
 	"editorStyle": "file:./index.css",
 	"style": "file:./style-index.css",
 	"render": "file:./render.php",
-	"viewScript": "file:./view.js"
+	"viewScriptModule": "file:./view.js"
 }
