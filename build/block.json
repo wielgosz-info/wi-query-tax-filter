@@ -12,11 +12,18 @@
     "core/query"
   ],
   "usesContext": [
-    "query"
+    "query",
+    "queryId"
   ],
   "supports": {
     "html": false,
     "interactivity": true
+  },
+  "attributes": {
+    "taxonomy": {
+      "type": "string",
+      "default": ""
+    }
   },
   "textdomain": "wi-query-tax-filter",
   "editorScript": "file:./index.js",
