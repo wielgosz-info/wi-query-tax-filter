@@ -33,11 +33,17 @@ function wi_query_tax_filter_get_param( $name ) {
 }
 
 function wi_query_tax_filter_query_loop_block_query_vars( array $query, WP_Block $block, int $page ) {
+	if( isset($block->context['query']) && $block->context['query']['inherit'] ) {
+		// If the block is inherited, we don't want to filter the query with separate parameters.
+		// We want to use the query "standard" taxonomy filters.
+		return $query;
+	}
+
 	$taxonomy = wi_query_tax_filter_get_param( 'qt_taxonomy' );
 	$term = wi_query_tax_filter_get_param( 'qt_term' );
 	$queryId = isset( $block->context['queryId'] ) ? $block->context['queryId'] : null;
 
-	// if the block is for different query, queryPage will be null
+	// If the block is for different query, queryPage will be null.
 	$queryPage = intval( wi_query_tax_filter_get_param( sprintf( 'query-%d-page', $queryId ) ) );
 
 	if ( $queryPage && $taxonomy && $term ) {
