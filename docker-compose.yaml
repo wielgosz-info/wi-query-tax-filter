@@ -1,0 +1,22 @@
+version: '3.9'
+
+services:
+  plugin:
+    image: wielgosz-info/${COMPOSE_PROJECT_NAME}:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/usr/local/app
+      - node_modules:/usr/local/app/node_modules
+      - vscode:/root/.vscode-server
+    secrets:
+      - user_ssh_key
+
+volumes:
+  node_modules: {}
+  vscode: {}
+
+secrets:
+  user_ssh_key:
+    file: ~/.ssh/id_rsa

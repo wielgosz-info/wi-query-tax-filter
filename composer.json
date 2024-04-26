@@ -1,0 +1,13 @@
+{
+	"name": "wielgosz-info/wi-collapsible-social-links",
+	"description": "WI Collapsible Social Links block",
+	"version": "0.1.0",
+	"type": "wordpress-plugin",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Urszula Wielgosz"
+		}
+	],
+	"require": {}
+}

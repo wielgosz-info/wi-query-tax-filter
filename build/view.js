@@ -1,0 +1,1 @@
+console.log("Hello World! (from wi-query-tax-filter-wi-query-tax-filter block)");

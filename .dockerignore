@@ -1,0 +1,5 @@
+# Ignore everything - we will mount the code into the container
+*
+
+# Except entrypoint script
+!docker-entrypoint.sh
