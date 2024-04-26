@@ -27,3 +27,29 @@ function wi_query_tax_filter_wi_query_tax_filter_block_init() {
 	register_block_type( __DIR__ . '/build' );
 }
 add_action( 'init', 'wi_query_tax_filter_wi_query_tax_filter_block_init' );
+
+function wi_query_tax_filter_get_param( $name ) {
+	return isset( $_REQUEST[ $name ] ) ? sanitize_text_field( $_REQUEST[ $name ] ) : null;
+}
+
+function wi_query_tax_filter_query_loop_block_query_vars( array $query, WP_Block $block, int $page ) {
+	$taxonomy = wi_query_tax_filter_get_param( 'qt_taxonomy' );
+	$term = wi_query_tax_filter_get_param( 'qt_term' );
+	$queryId = isset( $block->context['queryId'] ) ? $block->context['queryId'] : null;
+
+	// if the block is for different query, queryPage will be null
+	$queryPage = intval( wi_query_tax_filter_get_param( sprintf( 'query-%d-page', $queryId ) ) );
+
+	if ( $queryPage && $taxonomy && $term ) {
+		$query['tax_query'] = [
+			[
+				'taxonomy' => $taxonomy,
+				'field'    => 'slug',
+				'terms'    => $term,
+			],
+		];
+	}
+
+	return $query;
+}
+add_filter( 'query_loop_block_query_vars', 'wi_query_tax_filter_query_loop_block_query_vars', 10, 3 );
