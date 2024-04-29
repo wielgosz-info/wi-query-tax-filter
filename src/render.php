@@ -11,97 +11,45 @@
  * @see https://github.com/WordPress/gutenberg/blob/trunk/docs/reference-guides/block-api/block-metadata.md#render
  */
 
-$query_id = isset( $block->context['queryId'] ) ? $block->context['queryId'] : null;
-
-if ( $query_id === null) {
-	return;
-}
-
-$post_type = $block->context['query']['postType'];
-$available_taxonomies = get_object_taxonomies( $post_type, 'names' );
-
-if ( empty( $available_taxonomies ) ) {
-	return;
-}
-
-if ( isset( $attributes['taxonomy'] ) && in_array( $attributes['taxonomy'], $available_taxonomies ) ) {
-	$selected_taxonomy = $attributes['taxonomy'];
-} else {
-	$selected_taxonomy = $available_taxonomies[0];
-}
-
-$inherit_query = isset( $block->context['query']['inherit'] ) ? $block->context['query']['inherit'] : false;
-if ( $inherit_query ) {
-	global $wp_query;
-
-	$main_taxonomy = isset( $wp_query->tax_query->queries[0] ) ? $wp_query->tax_query->queries[0]['taxonomy'] : null;
-
-	if ( $selected_taxonomy === $main_taxonomy ) {
-		// It doesn't make sense to filter the same taxonomy as the main query.
-		return;
-	}
-}
-
-$hide_empty = isset( $attributes['hideEmpty'] ) ? $attributes['hideEmpty'] : true;
-$available_terms = get_terms( [
-	'taxonomy' => $selected_taxonomy,
-	'hide_empty' => $hide_empty,
-] );
-
-array_unshift( $available_terms, (object) array(
-	'slug' => 'all',
-	'name' => __('All', 'wi-query-tax-filter'),
-) );
-
-$query_page = sprintf( 'query-%d-page', $query_id );
-
 ?>
 
-<ul <?php echo get_block_wrapper_attributes(); ?>>
-	<?php foreach ( $available_terms as $term ) :
-		$args = array(
-			$query_page => 1,
-		);
+<?php
+	if ( isset( $content ) ) {
+		$p = new WP_HTML_Tag_Processor( $content );
 
-		
-		if ( ! $inherit_query ) {
-			if ( $term->slug !== 'all' ) {
-				$args = array_merge( $args, array(
-					'qt_taxonomy' => $selected_taxonomy,
-					'qt_term' => $term->slug,
-				) );
-			} else {
-				$args = array_merge( $args, array(
-					'qt_taxonomy' => null,
-					'qt_term' => null,
-				) );
-			}
-		} else {
-			if ( $term->slug !== 'all' ) {
-				$args = array_merge( $args, array(
-					'taxonomy' => $selected_taxonomy,
-					'term' => $term->slug,
-				) );
-			} else {
-				$args = array_merge( $args, array(
-					'taxonomy' => null,
-					'term' => null,
-				) );
-			}
+		if ( $p->next_tag( array(
+			'class_name' => 'wp-block-wielgosz-info-wi-query-tax-filter',
+		) ) ) {
+			$p->set_attribute('data-wp-interactive', 'wielgosz-info/wi-query-tax-filter');
 		}
 
-		$url = add_query_arg( $args );
-	?>
-		<li>
-			<a
-				href="<?php echo esc_url( $url ); ?>"
-				data-wp-key="<?php esc_attr_e( sprintf( "query-tax-filter-%s", $term->slug ) ); ?>"
-				data-wp-on--click="core/query::actions.navigate"
-				data-wp-on--mouseenter="core/query::actions.prefetch"
-				data-wp-watch="core/query::callbacks.prefetch"
-			>
-				<?php echo esc_html( $term->name ); ?>
-			</a>
-		</li>
-	<?php endforeach; ?>
-</ul>
+		while ( $p->next_tag( array(
+			'tag_name' => 'a',
+			'attr_name' => 'href',
+		) ) ) {
+			// split the href into the slug and the query string
+			$href = $p->get_attribute( 'href' );
+			$query = parse_url( $href, PHP_URL_QUERY );
+			$args = wp_parse_args( $query, array(
+				'qt_term' => 'all',
+			) );
+			$qt_term = $args['qt_term'];
+
+			$p->set_attribute('data-wp-key', 'query-tax-filter-' . $qt_term);
+			$p->set_attribute('data-wp-context', wp_json_encode( array(
+				'isCurrent' => $qt_term === 'all',
+			), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP ) );
+			$p->set_attribute('data-wp-bind--aria-current', 'context.isCurrent');
+			$p->set_attribute('data-wp-class--is-active', 'context.isCurrent');
+			$p->set_attribute('data-wp-on--click', 'core/query::actions.navigate');
+			$p->set_attribute('data-wp-on--mouseenter', 'core/query::actions.prefetch');
+			$p->set_attribute('data-wp-watch', 'core/query::callbacks.prefetch');
+			$p->set_attribute('data-wp-init', 'callbacks.init');
+		}
+		$content = $p->get_updated_html();
+
+		// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo $content;
+		// phpcs:enable
+	}
+?>

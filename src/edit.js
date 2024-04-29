@@ -7,9 +7,7 @@ import {
 import { store as coreStore } from '@wordpress/core-data';
 import { useSelect } from '@wordpress/data';
 import { useMemo, useEffect } from '@wordpress/element';
-import { SelectControl, PanelBody } from '@wordpress/components';
-
-import './editor.scss';
+import { SelectControl, RangeControl, PanelBody } from '@wordpress/components';
 
 /**
  * The edit function describes the structure of your block in the context of the
@@ -22,8 +20,9 @@ import './editor.scss';
 export default function Edit({ context, attributes, setAttributes }) {
 	const {
 		query: { postType, taxQuery },
+		queryId,
 	} = context;
-	const { taxonomy } = attributes;
+	const { taxonomy, number } = attributes;
 	const postTypeTaxonomies = useSelect(
 		(select) => {
 			const { getTaxonomies } = select(coreStore);
@@ -35,11 +34,19 @@ export default function Edit({ context, attributes, setAttributes }) {
 		[postType]
 	);
 	const otherTaxonomies = useMemo(() => {
+		if (!postTypeTaxonomies) {
+			return [];
+		}
 		if (!taxQuery) {
 			return postTypeTaxonomies;
 		}
 		return postTypeTaxonomies.filter((taxonomy) => {
-			return !taxQuery.some((query) => query.taxonomy === taxonomy.slug);
+			return !Object.entries(taxQuery).some(([key, value]) => {
+				if (taxonomy.slug !== key || !value || !value.length) {
+					return false;
+				}
+				return true;
+			});
 		});
 	}, [postTypeTaxonomies, taxQuery]);
 	const selectTaxonomyOptions = useMemo(() => {
@@ -58,13 +65,16 @@ export default function Edit({ context, attributes, setAttributes }) {
 		(select) => {
 			const { getEntityRecords } = select(coreStore);
 			return getEntityRecords('taxonomy', taxonomy, {
-				per_page: 10,
+				per_page: number,
 				orderby: 'count',
 				order: 'desc',
 			});
 		},
-		[taxonomy]
+		[taxonomy, number]
 	);
+	const queryPage = useMemo(() => {
+		return `query-${queryId}-page=1`;
+	}, [queryId]);
 	const template = useMemo(() => {
 		return [[
 			'core/buttons',
@@ -72,12 +82,24 @@ export default function Edit({ context, attributes, setAttributes }) {
 				justifyContent: 'flex-start',
 				verticalAlignment: 'center',
 			},
-			terms ? terms.map((term) => [
-				'core/button',
-				{ text: term.name, url: term.link },
-			]) : [],
+			[
+				[
+					'core/button',
+					{
+						text: __('All', 'wi-query-tax-filter'),
+						url: `?${queryPage}`,
+					},
+				],
+				...(terms ? terms.map((term) => [
+					'core/button',
+					{
+						text: term.name,
+						url: `?${queryPage}&qt_taxonomy=${taxonomy}&qt_term=${term.slug}`
+					},
+				]) : []),
+			],
 		]];
-	}, [terms]);
+	}, [terms, taxonomy]);
 	const innerBlockProps = useInnerBlocksProps(useBlockProps(), {
 		template,
 		templateLock: 'all',
@@ -98,6 +120,13 @@ export default function Edit({ context, attributes, setAttributes }) {
 						value={taxonomy}
 						options={selectTaxonomyOptions}
 						onChange={(value) => setAttributes({ taxonomy: value })}
+					/>
+					<RangeControl
+						label={__('Number of terms', 'wi-query-tax-filter')}
+						value={number}
+						onChange={(value) => setAttributes({ number: value })}
+						min={1}
+						max={20}
 					/>
 				</PanelBody>
 			</InspectorControls>
