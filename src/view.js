@@ -11,6 +11,8 @@ const { callbacks } = store('wielgosz-info/wi-query-tax-filter', {
 				navParams.get('qt_taxonomy') === hrefParams.get('qt_taxonomy') && navParams.get('qt_term') === hrefParams.get('qt_term')
 			) || event?.target === ref;
 			getContext().isCurrent = isCurrent;
+
+			// TODO: updated context is not rendering correctly when using browser back/forward.
 		},
 
 		init() {
