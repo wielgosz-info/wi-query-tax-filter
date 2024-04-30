@@ -43,7 +43,6 @@
 			$p->set_attribute('data-wp-class--is-active', 'context.isCurrent');
 			$p->set_attribute('data-wp-on--click', 'core/query::actions.navigate');
 			$p->set_attribute('data-wp-on--mouseenter', 'core/query::actions.prefetch');
-			$p->set_attribute('data-wp-watch', 'core/query::callbacks.prefetch');
 			$p->set_attribute('data-wp-init', 'callbacks.init');
 		}
 		$content = $p->get_updated_html();
