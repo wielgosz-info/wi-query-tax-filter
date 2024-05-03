@@ -6,9 +6,12 @@ const { callbacks } = store('wielgosz-info/wi-query-tax-filter', {
 			const { ref } = getElement();
 			const navParams = new URLSearchParams(event?.destination?.url || event?.target?.location?.href || window.location.href);
 			const hrefParams = new URLSearchParams(ref.href);
+			const queryPrefix = ref.closest('[data-wp-router-region]').dataset.wpRouterRegion;
+			const taxonomyKey = `${queryPrefix}-qt-taxonomy`;
+			const termKey = `${queryPrefix}-qt-term`;
 
 			const isCurrent = (
-				navParams.get('qt_taxonomy') === hrefParams.get('qt_taxonomy') && navParams.get('qt_term') === hrefParams.get('qt_term')
+				navParams.get(taxonomyKey) === hrefParams.get(taxonomyKey) && navParams.get(termKey) === hrefParams.get(termKey)
 			) || event?.target === ref;
 			getContext().isCurrent = isCurrent;
 
