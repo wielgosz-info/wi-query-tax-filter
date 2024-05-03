@@ -39,12 +39,12 @@ function wi_query_tax_filter_query_loop_block_query_vars( array $query, WP_Block
 		return $query;
 	}
 
-	$taxonomy = wi_query_tax_filter_get_param( 'qt_taxonomy' );
-	$term = wi_query_tax_filter_get_param( 'qt_term' );
 	$queryId = isset( $block->context['queryId'] ) ? $block->context['queryId'] : null;
 
-	// If the block is for different query, queryPage will be null.
+	// If the block is for different query, queryPage and other filters will be null.
 	$queryPage = intval( wi_query_tax_filter_get_param( sprintf( 'query-%d-page', $queryId ) ) );
+	$taxonomy = wi_query_tax_filter_get_param( sprintf( 'query-%d-qt-taxonomy', $queryId ) );
+	$term = wi_query_tax_filter_get_param( sprintf( 'query-%d-qt-term', $queryId ) );
 
 	if ( $queryPage && $taxonomy && $term ) {
 		$query['tax_query'] = [

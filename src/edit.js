@@ -72,9 +72,6 @@ export default function Edit({ context, attributes, setAttributes }) {
 		},
 		[taxonomy, number]
 	);
-	const queryPage = useMemo(() => {
-		return `query-${queryId}-page=1`;
-	}, [queryId]);
 	const template = useMemo(() => {
 		return [[
 			'core/buttons',
@@ -87,19 +84,19 @@ export default function Edit({ context, attributes, setAttributes }) {
 					'core/button',
 					{
 						text: __('All', 'wi-query-tax-filter'),
-						url: `?${queryPage}`,
+						url: `?query-${queryId}-page=1`,
 					},
 				],
 				...(terms ? terms.map((term) => [
 					'core/button',
 					{
 						text: term.name,
-						url: `?${queryPage}&qt_taxonomy=${taxonomy}&qt_term=${term.slug}`
+						url: `?query-${queryId}-page=1&query-${queryId}-qt-taxonomy=${taxonomy}&query-${queryId}-qt-term=${term.slug}`
 					},
 				]) : []),
 			],
 		]];
-	}, [terms, taxonomy]);
+	}, [terms, taxonomy, queryId]);
 	const innerBlockProps = useInnerBlocksProps(useBlockProps(), {
 		template,
 		templateLock: 'all',
