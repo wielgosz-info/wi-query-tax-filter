@@ -11,10 +11,11 @@
  * @see https://github.com/WordPress/gutenberg/blob/trunk/docs/reference-guides/block-api/block-metadata.md#render
  */
 
+$enhanced_pagination = isset( $block->context['enhancedPagination'] ) && $block->context['enhancedPagination'];
 ?>
 
 <?php
-	if ( isset( $content ) ) {
+	if ( $enhanced_pagination && isset( $content ) ) {
 		$p = new WP_HTML_Tag_Processor( $content );
 
 		if ( $p->next_tag( array(

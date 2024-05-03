@@ -13,7 +13,8 @@
 	],
 	"usesContext": [
 		"query",
-		"queryId"
+		"queryId",
+		"enhancedPagination"
 	],
 	"supports": {
 		"html": false,
