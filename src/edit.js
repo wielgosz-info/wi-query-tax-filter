@@ -6,7 +6,7 @@ import {
 } from '@wordpress/block-editor';
 import { store as coreStore } from '@wordpress/core-data';
 import { useSelect } from '@wordpress/data';
-import { useMemo, useEffect } from '@wordpress/element';
+import { useMemo, useEffect, useRef } from '@wordpress/element';
 import { SelectControl, RangeControl, PanelBody } from '@wordpress/components';
 
 /**
@@ -22,7 +22,8 @@ export default function Edit({ context, attributes, setAttributes }) {
 		query: { postType, taxQuery },
 		queryId,
 	} = context;
-	const { taxonomy, number } = attributes;
+	const { taxonomy, number, buttonClassName } = attributes;
+	const innerBlocksRef = useRef();
 	const postTypeTaxonomies = useSelect(
 		(select) => {
 			const { getTaxonomies } = select(coreStore);
@@ -85,19 +86,21 @@ export default function Edit({ context, attributes, setAttributes }) {
 					{
 						text: __('All', 'wi-query-tax-filter'),
 						url: `?query-${queryId}-page=1`,
+						className: buttonClassName,
 					},
 				],
 				...(terms ? terms.map((term) => [
 					'core/button',
 					{
 						text: term.name,
-						url: `?query-${queryId}-page=1&query-${queryId}-qt-taxonomy=${taxonomy}&query-${queryId}-qt-term=${term.slug}`
+						url: `?query-${queryId}-page=1&query-${queryId}-qt-taxonomy=${taxonomy}&query-${queryId}-qt-term=${term.slug}`,
+						className: buttonClassName,
 					},
 				]) : []),
 			],
 		]];
-	}, [terms, taxonomy, queryId]);
-	const innerBlockProps = useInnerBlocksProps(useBlockProps(), {
+	}, [terms, taxonomy, queryId, buttonClassName]);
+	const innerBlocksProps = useInnerBlocksProps(useBlockProps(), {
 		template,
 		templateLock: 'all',
 	});
@@ -107,6 +110,20 @@ export default function Edit({ context, attributes, setAttributes }) {
 			setAttributes({ taxonomy: otherTaxonomies[0].slug });
 		}
 	}, [taxonomy, otherTaxonomies]);
+
+	useEffect(() => {
+		if (innerBlocksRef.current) {
+			// Find is-style-* classes applied to the first button.
+			const button = innerBlocksRef.current.querySelector('.wp-block-button');
+			if (button) {
+				const buttonClasses = button.className.split(' ');
+				const buttonStyleClass = buttonClasses.find((className) => className.startsWith('is-style-'));
+				if (buttonStyleClass) {
+					setAttributes({ buttonClassName: buttonStyleClass });
+				}
+			}
+		}
+	}, []);
 
 	return (
 		<>
@@ -128,7 +145,7 @@ export default function Edit({ context, attributes, setAttributes }) {
 				</PanelBody>
 			</InspectorControls>
 
-			<div {...innerBlockProps} />
+			<div {...innerBlocksProps} ref={innerBlocksRef} />
 		</>
 	);
 }

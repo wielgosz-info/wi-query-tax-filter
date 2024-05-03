@@ -28,6 +28,10 @@
 		"number": {
 			"type": "number",
 			"default": 4
+		},
+		"buttonClassName": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"textdomain": "wi-query-tax-filter",
