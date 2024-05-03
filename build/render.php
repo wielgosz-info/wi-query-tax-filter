@@ -13,9 +13,10 @@
 
 $enhanced_pagination = isset( $block->context['enhancedPagination'] ) && $block->context['enhancedPagination'];
 $query_id = isset( $block->context['queryId'] ) ? $block->context['queryId'] : null;
-$term_key = $query_id !== null ? sprintf( 'query-%s-qt-term', $query_id ) : 'qt-term';
 
-if ( $enhanced_pagination && $query_id && isset( $content ) ) {
+if ( $enhanced_pagination && $query_id !== null && isset( $content ) ) {
+	$term_key = sprintf( 'query-%s-qt-term', $query_id );
+	$taxonomy_key = sprintf( 'query-%s-qt-taxonomy', $query_id );
 	$p = new WP_HTML_Tag_Processor( $content );
 
 	if ( $p->next_tag( array(
@@ -40,10 +41,16 @@ if ( $enhanced_pagination && $query_id && isset( $content ) ) {
 		) );
 		$qt_term = $args[$term_key];
 
+		// If qt_term === 'all', we need to remove filtering form URL
+		if ( 'all' === $qt_term ) {
+			$args[$term_key] = false;
+			$args[$taxonomy_key] = false;
+		}
+
 		// Update href to include the current query string.
 		$merged_args = array_merge( $request_args, $args );
 		$updated_href = add_query_arg( $merged_args, $href );
-		$p->set_attribute( 'href', esc_url( $href ) );
+		$p->set_attribute( 'href', esc_url( $updated_href ) );
 
 		$p->set_attribute( 'data-wp-key', 'query-tax-filter-' . $qt_term );
 		$p->set_attribute( 'data-wp-context', wp_json_encode( array(
