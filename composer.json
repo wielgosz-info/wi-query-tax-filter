@@ -1,7 +1,7 @@
 {
 	"name": "wielgosz-info/wi-query-tax-filter",
 	"description": "Allows to use query vars to filter Query Block posts.",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"type": "wordpress-plugin",
 	"license": "MIT",
 	"authors": [

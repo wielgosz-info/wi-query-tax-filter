@@ -1,6 +1,6 @@
 {
 	"name": "wi-query-tax-filter",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "Allows to use query vars to filter Query Block posts.",
 	"author": "Urszula Wielgosz",
 	"license": "MIT",

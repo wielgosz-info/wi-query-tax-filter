@@ -14,5 +14,8 @@ Allows to use query vars to filter Query Block posts.
 
 == Changelog ==
 
+= 0.1.1 =
+* Linting fixes
+
 = 0.1.0 =
 * Release
