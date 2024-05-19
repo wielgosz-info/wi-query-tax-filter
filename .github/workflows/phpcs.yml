@@ -1,0 +1,27 @@
+name: WPCS
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - staging
+      - develop
+  pull_request:
+    branches:
+      - main
+      - master
+      - staging
+      - develop
+
+jobs:
+  phpcs:
+    name: WPCS check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: WPCS check
+        uses: 10up/wpcs-action@stable
+        with:
+          use_local_config: 'true'
+          standard: '10up-Default'

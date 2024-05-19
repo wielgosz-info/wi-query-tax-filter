@@ -28,32 +28,46 @@ function wi_query_tax_filter_wi_query_tax_filter_block_init() {
 }
 add_action( 'init', 'wi_query_tax_filter_wi_query_tax_filter_block_init' );
 
+/**
+ * Sanitizes the taxonomy filter parameters.
+ *
+ * @param string $name The parameter name.
+ */
 function wi_query_tax_filter_get_param( $name ) {
-	return isset( $_REQUEST[ $name ] ) ? sanitize_text_field( $_REQUEST[ $name ] ) : null;
+	return isset( $_GET[ $name ] ) ? sanitize_text_field( wp_unslash( $_GET[ $name ] ) ) : null;
 }
 
+/**
+ * Filters the query vars for the Query Loop block.
+ *
+ * @param array    $query The query vars for the block.
+ * @param WP_Block $block The block being rendered.
+ * @param int      $page  The current page number.
+ *
+ * @return array The filtered query vars.
+ */
 function wi_query_tax_filter_query_loop_block_query_vars( array $query, WP_Block $block, int $page ) {
-	if( isset($block->context['query']) && $block->context['query']['inherit'] ) {
+	if ( isset( $block->context['query'] ) && $block->context['query']['inherit'] ) {
 		// If the block is inherited, we don't want to filter the query with separate parameters.
 		// We want to use the query "standard" taxonomy filters.
 		return $query;
 	}
 
-	$queryId = isset( $block->context['queryId'] ) ? $block->context['queryId'] : null;
+	$query_id = isset( $block->context['queryId'] ) ? $block->context['queryId'] : null;
 
 	// If the block is for different query, queryPage and other filters will be null.
-	$queryPage = intval( wi_query_tax_filter_get_param( sprintf( 'query-%d-page', $queryId ) ) );
-	$taxonomy = wi_query_tax_filter_get_param( sprintf( 'query-%d-qt-taxonomy', $queryId ) );
-	$term = wi_query_tax_filter_get_param( sprintf( 'query-%d-qt-term', $queryId ) );
+	$query_page = intval( wi_query_tax_filter_get_param( sprintf( 'query-%d-page', $query_id ) ) );
+	$taxonomy   = wi_query_tax_filter_get_param( sprintf( 'query-%d-qt-taxonomy', $query_id ) );
+	$term       = wi_query_tax_filter_get_param( sprintf( 'query-%d-qt-term', $query_id ) );
 
-	if ( $queryPage && $taxonomy && $term ) {
-		$query['tax_query'] = [
-			[
+	if ( $query_page && $taxonomy && $term ) {
+		$query['tax_query'] = array(
+			array(
 				'taxonomy' => $taxonomy,
 				'field'    => 'slug',
 				'terms'    => $term,
-			],
-		];
+			),
+		);
 	}
 
 	return $query;

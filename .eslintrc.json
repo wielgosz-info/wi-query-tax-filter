@@ -1,7 +1,3 @@
 {
-	"extends": ["plugin:@wordpress/eslint-plugin/recommended"],
-	"resolve": { "modules": ["node_modules"] },
-	"ignorePatterns": [
-		"node_modules/"
-	]
+	"extends": ["plugin:@wordpress/eslint-plugin/recommended"]
 }
