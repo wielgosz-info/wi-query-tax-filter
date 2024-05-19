@@ -14,10 +14,10 @@
 $wi_query_tax_filter_enhanced_pagination = isset( $block->context['enhancedPagination'] ) && $block->context['enhancedPagination'];
 $wi_query_tax_filter_query_id            = isset( $block->context['queryId'] ) ? $block->context['queryId'] : null;
 
-if ( $wi_query_tax_filter_enhanced_pagination && null !== $wi_query_tax_filter_query_id && isset( $wi_query_tax_filter_content ) ) {
+if ( $wi_query_tax_filter_enhanced_pagination && null !== $wi_query_tax_filter_query_id && isset( $content ) ) {
 	$wi_query_tax_filter_term_key      = sprintf( 'query-%s-qt-term', $wi_query_tax_filter_query_id );
 	$wi_query_tax_filter_taxonomy_key  = sprintf( 'query-%s-qt-taxonomy', $wi_query_tax_filter_query_id );
-	$wi_query_tax_filter_tag_processor = new WP_HTML_Tag_Processor( $wi_query_tax_filter_content );
+	$wi_query_tax_filter_tag_processor = new WP_HTML_Tag_Processor( $content );
 
 	if ( $wi_query_tax_filter_tag_processor->next_tag(
 		array(
@@ -81,9 +81,9 @@ if ( $wi_query_tax_filter_enhanced_pagination && null !== $wi_query_tax_filter_q
 		$wi_query_tax_filter_tag_processor->set_attribute( 'data-wp-init', 'callbacks.init' );
 	}
 
-	$wi_query_tax_filter_content = $wi_query_tax_filter_tag_processor->get_updated_html();
+	$content = $wi_query_tax_filter_tag_processor->get_updated_html();
 
 	// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
-	echo $wi_query_tax_filter_content;
+	echo $content;
 	// phpcs:enable
 }
