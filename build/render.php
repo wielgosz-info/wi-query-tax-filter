@@ -81,9 +81,9 @@ if ( $wi_query_tax_filter_enhanced_pagination && null !== $wi_query_tax_filter_q
 		$wi_query_tax_filter_tag_processor->set_attribute( 'data-wp-init', 'callbacks.init' );
 	}
 
-	$content = $wi_query_tax_filter_tag_processor->get_updated_html();
+	$wi_query_tax_filter_content = $wi_query_tax_filter_tag_processor->get_updated_html();
 
 	// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
-	echo $content;
+	echo $wi_query_tax_filter_content;
 	// phpcs:enable
 }

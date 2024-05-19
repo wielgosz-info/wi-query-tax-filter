@@ -13,6 +13,11 @@ import { SelectControl, RangeControl, PanelBody } from '@wordpress/components';
  * The edit function describes the structure of your block in the context of the
  * editor. This represents what the editor will render when the block is used.
  *
+ * @param {Object}   props               Props.
+ * @param {Object}   props.context
+ * @param {Object}   props.attributes
+ * @param {Function} props.setAttributes
+ *
  * @see https://developer.wordpress.org/block-editor/reference-guides/block-api/block-edit-save/#edit
  *
  * @return {Element} Element to render.
@@ -41,9 +46,9 @@ export default function Edit({ context, attributes, setAttributes }) {
 		if (!taxQuery) {
 			return postTypeTaxonomies;
 		}
-		return postTypeTaxonomies.filter((taxonomy) => {
+		return postTypeTaxonomies.filter((tax) => {
 			return !Object.entries(taxQuery).some(([key, value]) => {
-				if (taxonomy.slug !== key || !value || !value.length) {
+				if (tax.slug !== key || !value || !value.length) {
 					return false;
 				}
 				return true;
@@ -55,10 +60,10 @@ export default function Edit({ context, attributes, setAttributes }) {
 			return [];
 		}
 
-		return otherTaxonomies.map((taxonomy) => {
+		return otherTaxonomies.map((tax) => {
 			return {
-				label: taxonomy.name,
-				value: taxonomy.slug,
+				label: tax.name,
+				value: tax.slug,
 			};
 		});
 	}, [otherTaxonomies]);
@@ -74,31 +79,35 @@ export default function Edit({ context, attributes, setAttributes }) {
 		[taxonomy, number]
 	);
 	const template = useMemo(() => {
-		return [[
-			'core/buttons',
-			{
-				justifyContent: 'flex-start',
-				verticalAlignment: 'center',
-			},
+		return [
 			[
+				'core/buttons',
+				{
+					justifyContent: 'flex-start',
+					verticalAlignment: 'center',
+				},
 				[
-					'core/button',
-					{
-						text: __('All', 'wi-query-tax-filter'),
-						url: `?query-${queryId}-page=1`,
-						className: buttonClassName,
-					},
+					[
+						'core/button',
+						{
+							text: __('All', 'wi-query-tax-filter'),
+							url: `?query-${queryId}-page=1`,
+							className: buttonClassName,
+						},
+					],
+					...(terms
+						? terms.map((term) => [
+								'core/button',
+								{
+									text: term.name,
+									url: `?query-${queryId}-page=1&query-${queryId}-qt-taxonomy=${taxonomy}&query-${queryId}-qt-term=${term.slug}`,
+									className: buttonClassName,
+								},
+							])
+						: []),
 				],
-				...(terms ? terms.map((term) => [
-					'core/button',
-					{
-						text: term.name,
-						url: `?query-${queryId}-page=1&query-${queryId}-qt-taxonomy=${taxonomy}&query-${queryId}-qt-term=${term.slug}`,
-						className: buttonClassName,
-					},
-				]) : []),
 			],
-		]];
+		];
 	}, [terms, taxonomy, queryId, buttonClassName]);
 	const innerBlocksProps = useInnerBlocksProps(useBlockProps(), {
 		template,
@@ -109,21 +118,24 @@ export default function Edit({ context, attributes, setAttributes }) {
 		if (!taxonomy && otherTaxonomies && otherTaxonomies.length > 0) {
 			setAttributes({ taxonomy: otherTaxonomies[0].slug });
 		}
-	}, [taxonomy, otherTaxonomies]);
+	}, [taxonomy, otherTaxonomies, setAttributes]);
 
 	useEffect(() => {
 		if (innerBlocksRef.current) {
 			// Find is-style-* classes applied to the first button.
-			const button = innerBlocksRef.current.querySelector('.wp-block-button');
+			const button =
+				innerBlocksRef.current.querySelector('.wp-block-button');
 			if (button) {
 				const buttonClasses = button.className.split(' ');
-				const buttonStyleClass = buttonClasses.find((className) => className.startsWith('is-style-'));
+				const buttonStyleClass = buttonClasses.find((className) =>
+					className.startsWith('is-style-')
+				);
 				if (buttonStyleClass) {
 					setAttributes({ buttonClassName: buttonStyleClass });
 				}
 			}
 		}
-	}, []);
+	}, [setAttributes]);
 
 	return (
 		<>
